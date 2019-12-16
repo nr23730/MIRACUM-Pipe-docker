@@ -131,7 +131,7 @@ There are multiple possibilities to run the pipeline:
 For more information see at the help of the command by running:
 
 ```bash
-./miracum_pipe.sh
+./miracum_pipe.sh -h
 ```
 
 ### Parallel computation
