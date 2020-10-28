@@ -14,14 +14,16 @@ function usage() {
   echo "  -t  task            specify task: $(join_by ' ' ${VALID_TASKS})"
   echo "  -h                  show this help screen"
   echo "  -m  file            MSigDB hallmarks gene-set h.all.vX.X.entrez.gmt file"
+  echo "  -a  file            Absolute path to annovar.latest.tar.gz"
   exit 1
 }
 
-while getopts d:t:m:ph option; do
+while getopts d:t:m:a:ph option; do
   case "${option}" in
   d) readonly PARAM_DIR_PATIENT=$OPTARG ;;
   t) PARAM_TASK=$OPTARG ;;
   m) readonly HALLMARKS=$OPTARG ;;
+  a) ANNOVARS=$OPTARG ;;
   h) usage ;;
   \?)
     echo "Unknown option: -$OPTARG" >&2
@@ -147,17 +149,23 @@ function install_tool_annovar() {
 
   cd "${DIR_TOOLS}" || exit 1
 
-  echo "please visit http://download.openbioinformatics.org/annovar_download_form.php to get the download link for annovar via an email"
-  echo "enter annovar download link:"
-  read -r url_annovar
+  if [[ -z "${ANNOVARS}" ]]; then
+    echo "please visit http://download.openbioinformatics.org/annovar_download_form.php to get the download link for annovar via an email"
+    echo "enter annovar download link:"
+    read -r url_annovar
 
-  echo "fetching annovar"
-  wget "${url_annovar}" \
-      -O annovar.tar.gz
+    echo "fetching annovar"
+    wget "${url_annovar}" \
+        -O annovar.tar.gz
+    ANNOVARS="annovar.tar.gz"
+  fi
 
   # unpack
-  tar -xzf annovar.tar.gz
-  rm -f annovar.tar.gz
+  tar -xzf "${ANNOVARS}"
+  
+  if [[ -z "${ANNOVARS}" ]]; then
+    rm -f "${ANNOVARS}"
+  fi
 
   cd annovar
 
